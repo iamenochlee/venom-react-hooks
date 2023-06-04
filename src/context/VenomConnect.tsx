@@ -1,14 +1,14 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { VenomConnect } from "venom-connect";
-import { getAddress } from "../getters/getAddress";
-import { ProviderRpcClient } from "everscale-inpage-provider";
+import { getAccount } from "../getters/getAccount";
+import { Address, ProviderRpcClient } from "everscale-inpage-provider";
 import { Account } from "../types";
 
 export const useVenomConnect = (
   initVenomConnect: () => Promise<VenomConnect>,
   provider: ProviderRpcClient | null,
   setProvider: Dispatch<SetStateAction<ProviderRpcClient | null>>,
-  setAccount: Dispatch<SetStateAction<Account | null>>
+  setAccount: Dispatch<SetStateAction<Account | undefined>>
 ) => {
   const [venomConnect, setVenomConnect] = useState<VenomConnect | undefined>();
   const [isConnected, setIsConnected] = useState(false);
@@ -22,17 +22,17 @@ export const useVenomConnect = (
   const onConnect = async (provider: any) => {
     setProvider(provider);
 
-    const address = await getAddress(provider);
-    const balance = await provider?.getBalance(address);
-    if (address) {
-      setAccount({ address, balance });
+    const account = await getAccount(provider);
+    if (account) {
+      const balance = await provider?.getBalance(account?.address as Address);
+      setAccount({ ...account, balance });
       setIsConnected(true);
     }
   };
 
   const checkAuth = async (_venomConnect: any) => {
     const auth = await _venomConnect?.checkAuth();
-    if (auth) await getAddress(_venomConnect);
+    if (auth) await getAccount(_venomConnect);
   };
 
   const login = async () => {
@@ -65,5 +65,6 @@ export const useVenomConnect = (
     login,
     disconnect,
     isConnected,
+    venomConnect,
   };
 };

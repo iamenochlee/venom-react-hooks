@@ -1,2 +1,2 @@
 export { toNano } from "./toNano";
-export { asVenom } from "./asVenom";
+export { formatNano } from "./formatNano";

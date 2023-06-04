@@ -6,12 +6,12 @@ import { Account } from "../types";
 
 export const useConnect = () => {
   const { setProvider, provider } = useVenomProvider();
-  const [account, setAccount] = useState<Account | null>(null);
+  const [account, setAccount] = useState<Account | undefined>(undefined);
 
-  const { connect } = useVenomConfig();
+  const { initVenomConnect } = useVenomConfig();
 
-  const { login, disconnect, isConnected } = useVenomConnect(
-    connect,
+  const { login, disconnect, isConnected, venomConnect } = useVenomConnect(
+    initVenomConnect,
     provider,
     setProvider,
     setAccount
@@ -22,5 +22,6 @@ export const useConnect = () => {
     login,
     disconnect,
     isConnected,
+    venomConnect,
   };
 };

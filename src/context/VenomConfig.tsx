@@ -1,23 +1,17 @@
-import { createContext, ReactNode, useContext } from "react";
-import { VenomConnect } from "venom-connect";
+import { createContext, useContext } from "react";
 import { ProviderContext } from "./VenomProvider";
-
-interface VenomConfigContextValue {
-  connect: () => Promise<VenomConnect>;
-}
+import { VenomConfigContextValue, VenomConfigProps } from "../types";
 
 const VenomConfigContext = createContext<VenomConfigContextValue | undefined>(
   undefined
 );
 
-interface Props {
-  children: ReactNode;
-  connect: () => Promise<VenomConnect>;
-}
-
-export const VenomConfig = ({ children, connect }: Props) => {
+export const VenomConfig = ({
+  children,
+  initVenomConnect,
+}: VenomConfigProps) => {
   return (
-    <VenomConfigContext.Provider value={{ connect }}>
+    <VenomConfigContext.Provider value={{ initVenomConnect }}>
       <ProviderContext>{children}</ProviderContext>
     </VenomConfigContext.Provider>
   );

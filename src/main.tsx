@@ -7,7 +7,7 @@ import { initVenomConnect } from "../venom-connect/configure.ts";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <VenomConfig connect={initVenomConnect}>
+    <VenomConfig initVenomConnect={initVenomConnect}>
       <App />
     </VenomConfig>
   </React.StrictMode>

@@ -1,16 +1,12 @@
 import { ProviderRpcClient } from "everscale-inpage-provider";
 import { ReactNode, createContext, useContext, useState } from "react";
+import { VenomProvider } from "../types";
 
-const defaultContext: Type = {
+const defaultContext: VenomProvider = {
   provider: null,
   setProvider: () => null,
 };
-const Context = createContext<Type>(defaultContext);
-
-interface Type {
-  provider: ProviderRpcClient | null;
-  setProvider: React.Dispatch<React.SetStateAction<ProviderRpcClient | null>>;
-}
+const Context = createContext<VenomProvider>(defaultContext);
 
 export const ProviderContext = ({ children }: { children: ReactNode }) => {
   const [provider, setProvider] = useState<ProviderRpcClient | null>(null);
