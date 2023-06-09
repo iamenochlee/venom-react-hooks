@@ -2,14 +2,42 @@ import { Address } from "everscale-inpage-provider";
 import { SendStatus, SendInternalMessageArgs } from "../types";
 import { useCallback, useEffect } from "react";
 import { useVenomProvider } from "../context/VenomProvider";
-import { InitMessageStatus } from "../helpers/InitMessageStatus";
+import { InitStatus } from "../helpers";
 
-const initialValue: SendStatus = {
-  isLoading: false,
-  isSent: false,
-};
+/**
+ * Hook for sending an internal message.
+ * @param args - The arguments for sending the internal message.
+ * @returns An object containing the run function and the send status.
+ * @example
+ * const { run, status } = useSendMessage({
+ *   from: "0:x1234567890abcdef",
+ *   to: "0:xabcdef1234567890",
+ *   amount: "100",
+ *   onComplete: (result) => {
+ *     console.log("Message sent successfully:", result);
+ *   },
+ *   onError: (error) => {
+ *     console.error("Error occurred while sending the message:", error);
+ *   },
+ *   onSettled: (result, error) => {
+ *     if (error) {
+ *       console.log("Message settled with an error:", error);
+ *     } else {
+ *       console.log("Message settled successfully:", result);
+ *     }
+ *   },
+ *   overrides?: {
+ *     bounce?: false,
+ *   },
+ * });
+ */
 
-export const useSendMessage = (args: SendInternalMessageArgs) => {
+export const useSendMessage = (
+  args: SendInternalMessageArgs
+): {
+  run: () => Promise<void>;
+  status: SendStatus;
+} => {
   const {
     from,
     to,
@@ -19,48 +47,58 @@ export const useSendMessage = (args: SendInternalMessageArgs) => {
     onError,
     onSettled,
     overrides,
+    payload,
+    stateInit,
   } = args;
   const { provider } = useVenomProvider();
 
-  const { messageStatus, updateMessageStatus } =
-    InitMessageStatus(initialValue);
+  const { status, updateStatus } = InitStatus({
+    isLoading: false,
+    isSent: false,
+  } as SendStatus);
 
+  /**
+   * Function to send the internal message.
+   * @returns A promise that resolves when the message is sent.
+   */
   const run = useCallback(async () => {
     try {
       if (!provider) throw new Error("No Provider");
-      updateMessageStatus({ isLoading: true });
-      updateMessageStatus({ isSending: true });
+      updateStatus({ isLoading: true });
+      updateStatus({ isSending: true });
       const result = await provider?.[
         isDelayed ? "sendMessageDelayed" : "sendMessage"
       ]({
         sender: from,
         recipient: new Address(to),
         amount,
-        bounce: overrides?.bounce ?? true,
+        payload: payload ?? undefined,
+        stateInit: stateInit ?? undefined,
+        bounce: overrides?.bounce ?? false,
       });
-      updateMessageStatus({ isSent: true });
+      updateStatus({ isSent: true });
       console.log(result);
 
-      updateMessageStatus({ isError: false });
-      updateMessageStatus({ result });
-      updateMessageStatus({ isSuccess: true });
+      updateStatus({ isError: false });
+      updateStatus({ result });
+      updateStatus({ isSuccess: true });
       onComplete?.(result);
     } catch (error) {
-      updateMessageStatus({ isError: true });
-      updateMessageStatus({ error });
-      updateMessageStatus({ isSuccess: false });
+      updateStatus({ isError: true });
+      updateStatus({ error });
+      updateStatus({ isSuccess: false });
       onError?.(error as Error);
     } finally {
-      updateMessageStatus({ isLoading: false });
-      updateMessageStatus({ isSending: false });
+      updateStatus({ isLoading: false });
+      updateStatus({ isSending: false });
     }
   }, [provider, args]);
 
   useEffect(() => {
-    if (!messageStatus.isLoading && !messageStatus.isSent) {
-      onSettled?.(messageStatus.result, messageStatus.error);
+    if (!status.isLoading && !status.isSent) {
+      onSettled?.(status.result, status.error);
     }
-  }, [messageStatus]);
+  }, [status]);
 
-  return { run, messageStatus };
+  return { run, status };
 };

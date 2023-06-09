@@ -2,12 +2,41 @@ import { Address, Contract } from "everscale-inpage-provider";
 import { SendMessageArgs, SendStatus } from "../../types";
 import { useCallback, useEffect } from "react";
 import { useVenomProvider } from "../../context/VenomProvider";
-import { checkArgs, InitMessageStatus } from "../../helpers";
+import { checkArgs, InitStatus } from "../../helpers";
 
-const initialStatus: SendStatus = {
-  isLoading: false,
-  isSent: false,
-};
+/**
+ * Custom hook for sending an external message using the specified sendArgs.
+ * @param sendArgs - The arguments for sending the external message.
+ * @returns An object containing a `run` function to initiate the send operation and the status of the send operation.
+ * @example
+ * const sendArgs = {
+ *   address: "0x1234567890abcdef",
+ *   from: "0xabcdef1234567890",
+ *   abi: contractAbi,
+ *   publicKey: "publicKey",
+ *   functionName: "sendMessage",
+ *   args: [message],
+ *   overrides: {
+ *     value: "1000000000",
+ *     bounce: true
+ *   },
+ *   callType: "sendExternal",
+ *   executorParams: "executorParams",
+ *   withoutSignature: false,
+ *   onComplete: (result) => {
+ *     console.log("Message sent:", result);
+ *   },
+ *   onError: (error) => {
+ *     console.error("Error sending message:", error);
+ *   },
+ *   onSettled: (result, error) => {
+ *     console.log("Message send operation settled:", result, error);
+ *   }
+ * };
+ * const { run, status } = useSendExternalMessage(sendArgs);
+ * run();
+ * console.log(status.isSent); // true if the message was sent successfully
+ */
 
 export const useSendExternalMessage = (sendArgs: SendMessageArgs) => {
   const {
@@ -26,18 +55,21 @@ export const useSendExternalMessage = (sendArgs: SendMessageArgs) => {
     onSettled,
   } = sendArgs;
 
-  const { messageStatus, updateMessageStatus } =
-    InitMessageStatus(initialStatus);
+  const { status, updateStatus } = InitStatus({
+    isLoading: false,
+    isSent: false,
+  } as SendStatus);
+
   const { provider } = useVenomProvider();
 
   const run = useCallback(async () => {
     try {
       if (!provider) throw new Error("No Provider");
-      updateMessageStatus({ isLoading: true });
+      updateStatus({ isLoading: true });
       const contractAddress = new Address(address);
       const contract = new Contract(provider, abi, contractAddress);
 
-      updateMessageStatus({ isSending: true });
+      updateStatus({ isSending: true });
 
       let result;
 
@@ -86,30 +118,30 @@ export const useSendExternalMessage = (sendArgs: SendMessageArgs) => {
           });
           break;
       }
-      updateMessageStatus({ isSent: true });
+      updateStatus({ isSent: true });
 
-      updateMessageStatus({ isError: false });
-      updateMessageStatus({ result });
-      updateMessageStatus({ isSuccess: true });
+      updateStatus({ isError: false });
+      updateStatus({ result });
+      updateStatus({ isSuccess: true });
 
       onComplete?.(result);
     } catch (error) {
-      updateMessageStatus({ isError: true });
-      updateMessageStatus({ error });
-      updateMessageStatus({ isSuccess: false });
+      updateStatus({ isError: true });
+      updateStatus({ error });
+      updateStatus({ isSuccess: false });
 
       onError?.(error as Error);
     } finally {
-      updateMessageStatus({ isSending: false });
-      updateMessageStatus({ isLoading: false });
+      updateStatus({ isSending: false });
+      updateStatus({ isLoading: false });
     }
   }, Object.values(sendArgs));
 
   useEffect(() => {
-    if (!messageStatus.isLoading && !messageStatus.isSent) {
-      onSettled?.(messageStatus.result, messageStatus.error);
+    if (!status.isLoading && status.isSent) {
+      onSettled?.(status.result, status.error);
     }
-  }, [messageStatus]);
+  }, [status]);
 
-  return { run, messageStatus };
+  return { run, status };
 };

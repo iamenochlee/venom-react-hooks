@@ -1,19 +1,41 @@
 import { Address, Contract } from "everscale-inpage-provider";
-import { Args, ReadMessagesArgs, ReadStatus } from "../../types";
+import { Args, ReadMessagesArgs, ReadsStatus } from "../../types";
 import { useCallback, useEffect } from "react";
 import { useVenomProvider } from "../../context/VenomProvider";
-import { InitMessageStatus } from "../../helpers/InitMessageStatus";
+import { InitStatus } from "../../helpers/InitStatus";
 
-const initialStatus: ReadStatus = {
-  isRead: false,
-  isLoading: false,
-};
+/**
+ * Custom hook for reading data from multiple smart contracts.
+ * @param readArgs - The arguments for reading the messages.
+ * @returns The status of the read operation.
+ * @example
+ * const readArgs = {
+ *   contracts: [
+ *     {
+ *       address: "0x1234567890abcdef",
+ *       abi: contractAbi1,
+ *       functionName: "getMessage",
+ *       args: []
+ *     },
+ *     {
+ *       address: "0xabcdef1234567890",
+ *       abi: contractAbi2,
+ *       functionName: "getValue",
+ *       args: []
+ *     }
+ *   ]
+ * };
+ * const status = useReadMessages(readArgs);
+ * console.log(status.data); // Retrieved data from all contracts
+ */
 
 export const useReadMessages = (readArgs: ReadMessagesArgs) => {
   const { contracts, onComplete, onError, onSettled } = readArgs;
 
-  const { messageStatus, updateMessageStatus } =
-    InitMessageStatus(initialStatus);
+  const { status, updateStatus } = InitStatus({
+    isRead: false,
+    isLoading: false,
+  } as ReadsStatus);
 
   const { provider } = useVenomProvider();
 
@@ -30,44 +52,44 @@ export const useReadMessages = (readArgs: ReadMessagesArgs) => {
 
       return data;
     },
-    [provider, onComplete, onError, updateMessageStatus]
+    [provider, onComplete, onError, updateStatus]
   );
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        updateMessageStatus({ isLoading: true });
+        updateStatus({ isLoading: true });
         const fetchDataPromises = contracts.map(fetch);
-        updateMessageStatus({ isReading: true });
+        updateStatus({ isReading: true });
         await Promise.all(fetchDataPromises).then((data) => {
-          updateMessageStatus({ isError: false });
-          updateMessageStatus({ isRead: true });
-          updateMessageStatus({ data });
-          updateMessageStatus({ isSuccess: true });
+          updateStatus({ isError: false });
+          updateStatus({ isRead: true });
+          updateStatus({ data });
+          updateStatus({ isSuccess: true });
           onComplete?.(data);
         });
       } catch (error) {
         console.log(error);
 
-        updateMessageStatus({ error: error });
-        updateMessageStatus({ isError: true });
-        updateMessageStatus({ isSuccess: false });
+        updateStatus({ error: error });
+        updateStatus({ isError: true });
+        updateStatus({ isSuccess: false });
         onError?.(error as Error);
       } finally {
-        updateMessageStatus({ isLoading: false });
-        updateMessageStatus({ isReading: false });
+        updateStatus({ isLoading: false });
+        updateStatus({ isReading: false });
       }
     };
 
     fetchData();
-    updateMessageStatus({ refetch: fetchData });
+    updateStatus({ refetch: fetchData });
   }, []);
 
   useEffect(() => {
-    if (!messageStatus.isLoading && !messageStatus.isReading) {
-      onSettled?.(messageStatus.data, messageStatus.error);
+    if (!status.isLoading && !status.isReading) {
+      onSettled?.(status.data, status.error);
     }
-  }, [messageStatus]);
+  }, [status]);
 
-  return messageStatus;
+  return status;
 };

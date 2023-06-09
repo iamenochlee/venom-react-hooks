@@ -1,2 +1,2 @@
 export { checkArgs } from "./checkArgs";
-export { InitMessageStatus } from "./InitMessageStatus";
+export { InitStatus } from "./InitStatus";

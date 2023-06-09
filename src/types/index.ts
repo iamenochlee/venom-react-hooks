@@ -1,5 +1,6 @@
 import {
   Address,
+  FunctionCall,
   ProviderRpcClient,
   SendInternalParams,
 } from "everscale-inpage-provider";
@@ -62,31 +63,30 @@ export interface SendMessageArgs extends ExternalMessageArgs, MessageCallbacks {
 
 export interface ReadMessageArgs extends MessageCallbacks, Args {}
 
-export interface ReadMessagesArgs extends MessageCallbacks {
+export interface ReadMessagesArgs {
   contracts: Args[];
+  onComplete?: (data?: any[]) => void;
+  onError?: (error?: Error) => void;
+  onSettled?: (data?: any[], error?: Error) => void;
 }
+
 export interface SendInternalMessageArgs
   extends SendInternalParams,
     MessageCallbacks {
   isDelayed?: boolean;
   to: string;
+  payload?: FunctionCall<Address> | undefined;
   overrides?: {
+    /**  bounce: defaults to false*/
     bounce: boolean;
   };
-}
-
-export interface BaseStatus {
-  isLoading: boolean;
-  isSuccess?: boolean;
-  isError?: boolean;
-  error?: any;
 }
 
 export interface SignStatus extends BaseStatus {
   isSigned: boolean;
   isSigning?: boolean;
   result?: {
-    dataHash: string;
+    dataHash?: string;
     signature: string;
     signatureHex: string;
     signatureParts: {
@@ -99,21 +99,57 @@ export interface SignStatus extends BaseStatus {
 export interface SignMessageArgs {
   publicKey: string;
   data: any;
+  raw?: boolean;
   withSignatureId?: number | boolean;
   onComplete?: (data?: any) => void;
   onError?: (error?: Error) => void;
   onSettled?: (data?: any, error?: Error) => void;
 }
+
+export interface SubscribeArgs {
+  eventName: any;
+  address: Address;
+  onDataCallback: (data: any) => void;
+}
+export interface ContractSubscribeArgs {
+  abi: AbiType;
+  eventName: any;
+  address: Address;
+  onDataCallback: (data: any) => void;
+}
+
+export interface BaseStatus {
+  isLoading: boolean;
+  isSuccess?: boolean;
+  isError?: boolean;
+  error?: any;
+}
+
 export interface ReadStatus extends BaseStatus {
   data?: any;
   isReading?: boolean;
   isRead: boolean;
   refetch?: () => Promise<void>;
 }
+
+export interface ReadsStatus extends BaseStatus {
+  data?: any[];
+  isReading?: boolean;
+  isRead: boolean;
+  refetch?: () => Promise<void>;
+}
+
 export interface SendStatus extends BaseStatus {
   result?: any;
   isSending?: boolean;
   isSent: boolean;
+}
+
+export interface SubscribeStatus {
+  isSubscribed: boolean;
+  isSubscribing: boolean;
+  isError?: boolean;
+  error?: Error;
 }
 
 export interface AbiType {
