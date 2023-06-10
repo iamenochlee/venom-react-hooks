@@ -2,7 +2,7 @@ export { VenomConfig, useVenomConfig } from "./context/VenomConfig";
 export { useVenomProvider, ProviderContext } from "./context/VenomProvider";
 export { useVenomConnect } from "./context/VenomConnect";
 export { getAccount } from "./getters/getAccount";
-export { InitStatus, checkArgs } from "./helpers";
+export { InitStatus, checkArgs, addAsset } from "./helpers";
 export { toNano, formatNano } from "./utils";
 export { useConnect } from "./hooks/useConnect";
 export { useSendMessage } from "./hooks/useSendMessage";
