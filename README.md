@@ -89,9 +89,10 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
 ```js
 import {
   useConnect,
-  useContractReads,
+  useReadMessage,
   useContractSubscription,
   useSendExternalMessage,
+  ...
 } from "venom-react-hooks";
 ```
 
