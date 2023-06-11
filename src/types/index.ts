@@ -107,7 +107,6 @@ export interface SignMessageArgs {
 }
 
 export interface SubscribeArgs {
-  eventName: any;
   address: Address;
   onDataCallback: (data: any) => void;
 }

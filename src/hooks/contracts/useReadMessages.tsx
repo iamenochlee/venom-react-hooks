@@ -12,13 +12,13 @@ import { InitStatus } from "../../helpers/InitStatus";
  * const readArgs = {
  *   contracts: [
  *     {
- *       address: "0x1234567890abcdef",
+ *       address: "0:x1234567890abcdef",
  *       abi: contractAbi1,
  *       functionName: "getMessage",
  *       args: []
  *     },
  *     {
- *       address: "0xabcdef1234567890",
+ *       address: "0:xabcdef1234567890",
  *       abi: contractAbi2,
  *       functionName: "getValue",
  *       args: []

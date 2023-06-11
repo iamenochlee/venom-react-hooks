@@ -10,7 +10,7 @@ import { InitStatus } from "../../helpers/InitStatus";
  * @returns The status of the read operation.
  * @example
  * const readArgs = {
- *   address: "0x1234567890abcdef",
+ *   address: "0:x1234567890abcdef",
  *   abi: contractAbi,
  *   functionName: "getMessage",
  *   args?: []

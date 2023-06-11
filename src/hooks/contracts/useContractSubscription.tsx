@@ -10,10 +10,9 @@ import { Contract } from "everscale-inpage-provider";
  * @returns An object containing the status of the subscription.
  * @example
  * const subscribeArgs = {
- *   provider: venomProvider,
  *   abi: contractAbi,
  *   eventName: "Transfer",
- *   address: "0x1234567890abcdef",
+ *   address: "0:x1234567890abcdef",
  *   onDataCallback: (data) => {
  *     console.log("Received event data:", data);
  *   }
@@ -55,11 +54,12 @@ export const useContractSubscription = (
     } finally {
       updateStatus({ isSubscribing: false });
     }
-  }, [provider, ...Object.values(subscribeArgs)]);
+  }, Object.values(subscribeArgs));
 
   useEffect(() => {
     subscribeToEvent();
-  }, [provider, onDataCallback]);
+    console.log("it actuallly updated");
+  }, [provider]);
 
   return { status };
 };

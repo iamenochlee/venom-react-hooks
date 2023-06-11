@@ -10,8 +10,8 @@ import { checkArgs, InitStatus } from "../../helpers";
  * @returns An object containing a `run` function to initiate the send operation and the status of the send operation.
  * @example
  * const sendArgs = {
- *   address: "0x1234567890abcdef",
- *   from: "0xabcdef1234567890",
+ *   address: "0:x1234567890abcdef",
+ *   from: "0:xabcdef1234567890",
  *   abi: contractAbi,
  *   publicKey: "publicKey",
  *   functionName: "sendMessage",
