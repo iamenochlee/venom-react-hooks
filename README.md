@@ -1,16 +1,20 @@
 ## Venom React Hooks
 
-This project is a submission for Venom Foundation [Hackation]("https://hackathon.venom.network/)
+This project is a submission for Venom Foundation [Hackation](https://hackathon.venom.network/)
 
 Venom React Hooks provides easily customizable hooks for connecting, reading, sending messages, and subscribing to messages on the Venom Network.
 
 Build your frontends Faster.
 
+### Demo
+
+Try it out on replit: [Example](https://replit.com/@EnochAkinbode/Venom-Hooks)
+
 ### Installation
 
 `npm i venom-react-hooks everscale-inpage-provider everscale-standalone-client venom-connect`
 
-Venom React hooks utilizes [venom-connect]("https://github.com/web3sp/venom-connect"), [everscale-standalone-client]("https://github.com/broxus/everscale-standalone-client"), [everscale-inpage-provider]("https://github.com/broxus/everscale-inpage-provider") to provide an interface for interacting with the network from the frontend.
+Venom React hooks utilizes [venom-connect](https://github.com/web3sp/venom-connect), [everscale-standalone-client](https://github.com/broxus/everscale-standalone-client), [everscale-inpage-provider](https://github.com/broxus/everscale-inpage-provider) to provide an interface for interacting with the network from the frontend.
 
 ### Usage
 

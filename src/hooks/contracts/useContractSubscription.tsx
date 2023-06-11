@@ -58,7 +58,6 @@ export const useContractSubscription = (
 
   useEffect(() => {
     subscribeToEvent();
-    console.log("it actuallly updated");
   }, [provider]);
 
   return { status };
